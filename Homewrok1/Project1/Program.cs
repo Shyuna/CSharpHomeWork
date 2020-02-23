@@ -23,9 +23,9 @@ namespace ConsoleApp1
                 {
                     Console.WriteLine("请输入第一个操作数（整数）：");
                     s = Console.ReadLine();
-                    flag = int.TryParse(s, out num1);       //输入是数字时，flag置true
+                    flag = int.TryParse(s, out num1);       //输入是整数时，flag置true
                     isLoop = true;   //置isLoop为true，说明之后不再是第一次输入了，
-                                     //提示语句会变化为"输入不是数字，请重新输入第一个操作数："
+                                     //提示语句会变化为"输入不是整数，请重新输入第一个操作数："
                 }
                 else
                 {
