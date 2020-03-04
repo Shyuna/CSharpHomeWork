@@ -293,7 +293,7 @@ namespace ConsoleApp2
                         }
                         if(someWidth <= 0)
                         {
-                            Console.WriteLine("输入小于0，请重新输入长方形的宽：");
+                            Console.WriteLine("输入不是正数，请重新输入长方形的宽：");
                             flag = true;
                         }
                     }
