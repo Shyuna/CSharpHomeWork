@@ -7,7 +7,7 @@ namespace Alarm
     {
         private int clockTime;
         public delegate void ClockEventHandler(Object sender, ClockEventArgs e);
-        public event ClockEventHandler UsualEvent; 
+        public event ClockEventHandler TickEvent; 
         public event ClockEventHandler AlarmEvent;
 
         public class ClockEventArgs : EventArgs
@@ -27,11 +27,11 @@ namespace Alarm
             }
         }
 
-        public void UsualMode(ClockEventArgs e)
+        public void TickMode(ClockEventArgs e)
         {
-            if (UsualEvent != null)
+            if (TickEvent != null)
             { 
-                UsualEvent(this, e);  // 显示时间事件
+                TickEvent(this, e);  // 显示时间事件
             }
         }
 
@@ -42,7 +42,7 @@ namespace Alarm
                 Thread.Sleep(500);
                 clockTime = i%24;
                 ClockEventArgs e = new ClockEventArgs(clockTime);
-                UsualMode(e);
+                TickMode(e);
                 if (clockTime ==setTime)
                 {
                     AlarmMode(e);  
@@ -80,7 +80,7 @@ namespace Alarm
             Clock clock = new Clock();
             Alarm alarm = new Alarm();
             clock.AlarmEvent += alarm.MakeAlert;   
-            clock.UsualEvent += Display.ShowTime;      
+            clock.TickEvent += Display.ShowTime;      
             clock.SomeClock(10);
             Console.ReadLine();
         }
