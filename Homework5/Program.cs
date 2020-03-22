@@ -27,7 +27,7 @@ namespace ConsoleApp3
             }
             public override string ToString()
             {
-                return "Name:"+Name+"  "
+                return "Item:"+Name+"  "
                     +"Price:"+Price+"  "
                     +"Amount:"+Amount+"\n";
             }
@@ -86,7 +86,7 @@ namespace ConsoleApp3
                 return "OrderNum:"+OrderNum+"\n"
                     +"Address:"+Address+"\n"
                     +"Customer:"+Customer+"\n"
-                    +s;
+                    +s+"Total Price:"+TotalPrice+"\n";
             }
             public override bool Equals(object obj)
             {
@@ -176,7 +176,7 @@ namespace ConsoleApp3
         {
             OrderItem item1 = new OrderItem("apple", 5.2, 1);
             OrderItem item2 = new OrderItem("orange", 3.3, 2);
-            OrderItem item3 = new OrderItem("potato", 4.0, 3);
+            OrderItem item3 = new OrderItem("potato", 4.5, 3);
             OrderItem item4 = new OrderItem("banana", 2.1, 4);
             OrderItem item5 = new OrderItem("tomato", 3.2, 5);
             List<OrderItem> itemList1 = new List<OrderItem>();
