@@ -111,7 +111,7 @@ namespace ConsoleApp3
             {
                 foreach(Order order in orderList)
                 {
-                    if (order == m)
+                    if (order.Equals(m))
                     {
                         return false;
                     }
@@ -153,8 +153,7 @@ namespace ConsoleApp3
             {
                 if (flag)
                 {
-                    OrderItem item = new OrderItem(Name, 0, 0);
-                    var pointOrder = orderList.Where(w => w.itemList.Contains(item)).OrderBy(w => w.OrderNum);
+                    var pointOrder = orderList.Where(w => w.itemList.Exists(item=>item.Name==Name)).OrderBy(w => w.OrderNum);
                     return pointOrder;
                 }
                 else
