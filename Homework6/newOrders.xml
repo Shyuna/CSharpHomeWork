@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<ArrayOfOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Order>
+    <itemList>
+      <OrderItem>
+        <Name>apple</Name>
+        <Price>5.2</Price>
+        <Amount>1</Amount>
+      </OrderItem>
+      <OrderItem>
+        <Name>orange</Name>
+        <Price>3.3</Price>
+        <Amount>2</Amount>
+      </OrderItem>
+    </itemList>
+    <OrderNum>6</OrderNum>
+    <Address>Shanxi</Address>
+    <Customer>Customer6</Customer>
+  </Order>
+  <Order>
+    <itemList>
+      <OrderItem>
+        <Name>potato</Name>
+        <Price>4.5</Price>
+        <Amount>3</Amount>
+      </OrderItem>
+      <OrderItem>
+        <Name>banana</Name>
+        <Price>2.1</Price>
+        <Amount>4</Amount>
+      </OrderItem>
+    </itemList>
+    <OrderNum>7</OrderNum>
+    <Address>Zhuzhou</Address>
+    <Customer>Customer7</Customer>
+  </Order>
+</ArrayOfOrder>
