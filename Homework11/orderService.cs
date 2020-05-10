@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace ConsoleApp3
         }
         public override string ToString()
         {
-            return "Item:" + OrderItemID + "  "
+            return "Item:" + ItemName + "  "
                 + "Price:" + Price + "  "
                 + "Amount:" + Amount + "\n";
         }
@@ -56,6 +57,7 @@ namespace ConsoleApp3
     }
     public class Order
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None), Key]
         public int OrderID { set; get; }
         [Required]
         public string Address { set; get; }
@@ -66,9 +68,16 @@ namespace ConsoleApp3
             get
             {
                 double total = 0;
-                foreach (OrderItem item in OrderItems)
+                using (var context = new OrderContext())
                 {
-                    total += item.Price * item.Amount;
+                    var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
+
+                    if (orderItems == null) return 0;
+
+                    foreach (OrderItem item in orderItems)
+                    {
+                        total += item.Price * item.Amount;
+                    }
                 }
                 return total;
             }
@@ -105,10 +114,16 @@ namespace ConsoleApp3
         public override string ToString()
         {
             string s = "";
-            foreach (OrderItem item in OrderItems)
+            using (var context = new OrderContext())
             {
-                s += item.ToString();
+                var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
+
+                foreach (OrderItem item in orderItems)
+                {
+                    s += item.ToString();
+                }
             }
+            
             return "OrderNum:" + OrderID + "\n"
                 + "Address:" + Address + "\n"
                 + "Customer:" + Customer + "\n"
