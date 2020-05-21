@@ -1,0 +1,323 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+namespace ConsoleApp3
+{
+    public class OrderItem
+    {
+        public int OrderItemID { set; get; }
+        public string ItemName { set; get; }
+        [Required]
+        public double Price { set; get; }
+        public int Amount { set; get; }
+
+        public int OrderID { set; get; }
+        public Order Order { set; get; }
+        public OrderItem(int id, string name, double price, int amount)
+        {
+            OrderItemID = id;
+            ItemName = name;
+            Price = price;
+            Amount = amount;
+        }
+        public OrderItem()
+        {
+            OrderItemID = 0;
+            ItemName = "";
+            Price = 0;
+            Amount = 0;
+        }
+        public OrderItem DeepClone()
+        {
+            OrderItem orderItem = (OrderItem)this.MemberwiseClone();
+
+            return orderItem;
+        }
+        public override string ToString()
+        {
+            return "Item:" + ItemName + "  "
+                + "Price:" + Price + "  "
+                + "Amount:" + Amount + "\n";
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is OrderItem item &&
+                   OrderItemID == item.OrderItemID;
+        }
+
+        public override int GetHashCode()
+        {
+            return 1170927957 + OrderItemID.GetHashCode();
+        }
+    }
+    public class Order
+    {
+        [DatabaseGenerated(DatabaseGeneratedOption.None), Key]
+        public int OrderID { set; get; }
+        [Required]
+        public string Address { set; get; }
+        [Required]
+        public string Customer { set; get; }
+        public double TotalPrice
+        {
+            get
+            {
+                double total = 0;
+                using (var context = new OrderContext())
+                {
+                    var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
+
+                    if (orderItems == null) return 0;
+
+                    foreach (OrderItem item in orderItems)
+                    {
+                        total += item.Price * item.Amount;
+                    }
+                }
+                return total;
+            }
+        }
+        public List<OrderItem> OrderItems { get; set; }
+
+        public Order(int orderNum, string address, string customer, List<OrderItem> itemList)
+        {
+            OrderID = orderNum;
+            Address = address;
+            Customer = customer;
+            this.OrderItems = itemList;
+        }
+        public Order()
+        {
+            OrderID = 0;
+            Address = "";
+            Customer = "";
+            List<OrderItem> list = new List<OrderItem>();
+            this.OrderItems = list;
+        }
+        public Order DeepClone()
+        {
+            List<OrderItem> orderItem = new List<OrderItem>();
+
+            foreach (OrderItem orderItems in OrderItems)
+            {
+                orderItem.Add(orderItems.DeepClone());
+            }
+            Order order = new Order(OrderID, Address, Customer, orderItem);
+            return order;
+        }
+        public bool AddItem(OrderItem m)
+        {
+            using (var context = new OrderContext())
+            {
+                var orderItem = context.OrderItems
+                    .SingleOrDefault(o => o.OrderItemID == m.OrderItemID);
+                if (orderItem != null) return false;
+            }
+
+            using (var context = new OrderContext())
+            {
+                var orderItem = m.DeepClone();
+                context.OrderItems.Add(orderItem);
+                context.SaveChanges();
+            }           
+            return true;
+        }
+        public void RemoveItem(OrderItem orderItem)
+        {
+            using (var context = new OrderContext())
+            {
+                var OrderItem = context.OrderItems
+                    .SingleOrDefault(o => o.OrderItemID == orderItem.OrderItemID);
+                if (OrderItem != null)
+                {
+                    context.OrderItems.Remove(OrderItem);
+                    context.SaveChanges();
+                }
+            }
+        }
+        public override string ToString()
+        {
+            string s = "";
+            using (var context = new OrderContext())
+            {
+                var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
+
+                foreach (OrderItem item in orderItems)
+                {
+                    s += item.ToString();
+                }
+            }
+
+            return "OrderNum:" + OrderID + "\n"
+                + "Address:" + Address + "\n"
+                + "Customer:" + Customer + "\n"
+                + s + "Total Price:" + TotalPrice + "\n";
+        }
+        public override bool Equals(object obj)
+        {
+            return obj is Order order &&
+                   OrderID == order.OrderID;
+        }
+        public override int GetHashCode()
+        {
+            var hashCode = -227992339;
+            hashCode = hashCode * -1521134295 + OrderID.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Address);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Customer);
+            hashCode = hashCode * -1521134295 + TotalPrice.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<List<OrderItem>>.Default.GetHashCode(OrderItems);
+            return hashCode;
+        }
+    }
+    [Serializable]
+    public class OrderService
+    {
+
+        public bool AddOrder(Order m)
+        {
+            using (var context = new OrderContext())
+            {
+                var order = context.Orders
+                    .SingleOrDefault(o => o.OrderID == m.OrderID);
+                if (order != null) return false;
+            }
+
+            using (var context = new OrderContext())
+            {
+                var order = m.DeepClone();
+                context.Orders.Add(order);
+                context.SaveChanges();
+            }
+            return true;
+        }
+        public bool DeleteOrder(int orderNum)
+        {
+            using (var context = new OrderContext())
+            {
+                var order = context.Orders
+                    .SingleOrDefault(o => o.OrderID == orderNum);
+                if (order != null)
+                {
+                    context.Orders.Remove(order);
+                    context.SaveChanges();
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void UpdateOrder(Order m)
+        {
+            using (var context = new OrderContext())
+            {
+                var order = context.Orders
+                    .SingleOrDefault(o => o.OrderID == m.OrderID);
+                if (order == null)
+                {
+                    AddOrder(m);
+                }
+                else
+                {
+                    order = m.DeepClone();
+                    context.SaveChanges();
+                }
+            }
+        }
+        public Order FindOrder(int orderNum)
+        {
+            using (var context = new OrderContext())
+            {
+                var order = context.Orders
+                    .SingleOrDefault(o => o.OrderID == orderNum);
+                if (order != null) return order.DeepClone();
+                else return new Order();
+            }
+
+        }
+        public List<Order> FindOrder(bool flag, string Name)
+        {
+            using (var context = new OrderContext())
+            {
+                if (flag)
+                {
+                    var pointOrderItem = context.OrderItems.Where(w => w.ItemName == Name).OrderBy(w => w.OrderID);
+                    List<Order> returnOrder = new List<Order>();
+                    foreach (OrderItem item in pointOrderItem)
+                    {
+                        returnOrder.Add(FindOrder(item.OrderID).DeepClone());
+                    }
+                    return returnOrder;
+                }
+                else
+                {
+                    var pointOrder = context.Orders.Where(w => w.Customer == Name).OrderBy(w => w.OrderID);
+                    List<Order> returnOrder = new List<Order>();
+                    foreach (Order o in pointOrder)
+                    {
+                        returnOrder.Add(o.DeepClone());
+                    }
+                    return returnOrder;
+                }
+            }
+        }
+        public List<Order> SortOrder()
+        {
+            using (var context = new OrderContext())
+            {
+                var query = context.Orders.OrderBy(o => o.OrderID);
+                return query.ToList();
+            }
+        }
+        public List<Order> SortOrder(Func<Order, Order, int> func)
+        {
+            using (var context = new OrderContext())
+            {
+                var query = context.Orders.ToList();
+                query.Sort((a, b) => func(a, b));
+                return query;
+            }
+        }
+        public void Export(string fileName)
+        {
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Order>));
+            using (FileStream fs = new FileStream(fileName, FileMode.Create))
+            {
+                List<Order> orderList = new List<Order>();
+                using (var context = new OrderContext())
+                {
+                    orderList = context.Orders.ToList();
+                }
+                xmlSerializer.Serialize(fs, orderList);
+            }
+        }
+        public void Import(string fileName)
+        {
+            using (FileStream fs = new FileStream(fileName, FileMode.Open))
+            {
+                try
+                {
+                    XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<Order>));
+                    List<Order> orderList2 = (List<Order>)xmlSerializer.Deserialize(fs);
+                    foreach (Order order in orderList2)
+                    {
+                        AddOrder(order);
+                    }
+                }
+                catch (FileNotFoundException e)
+                {
+                    throw e;
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+        }
+    }
+}
