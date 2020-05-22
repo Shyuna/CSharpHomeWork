@@ -13,7 +13,7 @@ namespace ConsoleApp3
     public class OrderItem
     {
         public int OrderItemID { set; get; }
-        public string ItemName { set; get; }
+        public string Name { set; get; }
         [Required]
         public double Price { set; get; }
         public int Amount { set; get; }
@@ -23,14 +23,14 @@ namespace ConsoleApp3
         public OrderItem(int id, string name, double price, int amount)
         {
             OrderItemID = id;
-            ItemName = name;
+            Name = name;
             Price = price;
             Amount = amount;
         }
         public OrderItem()
         {
             OrderItemID = 0;
-            ItemName = "";
+            Name = "";
             Price = 0;
             Amount = 0;
         }
@@ -42,7 +42,7 @@ namespace ConsoleApp3
         }
         public override string ToString()
         {
-            return "Item:" + ItemName + "  "
+            return "Item:" + Name + "  "
                 + "Price:" + Price + "  "
                 + "Amount:" + Amount + "\n";
         }
@@ -70,18 +70,23 @@ namespace ConsoleApp3
             get
             {
                 double total = 0;
-                using (var context = new OrderContext())
+                try
                 {
-                    var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
-
-                    if (orderItems == null) return 0;
-
-                    foreach (OrderItem item in orderItems)
+                    using (var context = new OrderContext())
                     {
-                        total += item.Price * item.Amount;
+                        var orderItems = context.OrderItems.Where(item => item.OrderID == OrderID);
+
+                        foreach (OrderItem item in orderItems)
+                        {
+                            total += item.Price * item.Amount;
+                        }
                     }
+                    return total;
                 }
-                return total;
+                catch(Exception e)
+                {
+                    return 0;
+                }
             }
         }
         public List<OrderItem> OrderItems { get; set; }
@@ -179,23 +184,52 @@ namespace ConsoleApp3
     [Serializable]
     public class OrderService
     {
-
+        public static List<Order> GetAllOrders()
+        {
+            try
+            {
+                using (var context = new OrderContext())
+                {
+                    return AllOrders(context).ToList();
+                }
+            }
+            catch(Exception e)
+            {
+                return new List<Order>();
+            }
+        }
+        private static IQueryable<Order> AllOrders(OrderContext context)
+        {
+            return context.Orders;
+                
+                      
+        }
         public bool AddOrder(Order m)
         {
-            using (var context = new OrderContext())
+            try
+            {
+                using (var context = new OrderContext())
+                {
+                    context.Orders.Add(m.DeepClone());
+                    context.SaveChanges();
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;// throw new ApplicationException($"添加错误: {e.Message}");
+            }
+           /* using (var context = new OrderContext())
             {
                 var order = context.Orders
                     .SingleOrDefault(o => o.OrderID == m.OrderID);
                 if (order != null) return false;
-            }
-
-            using (var context = new OrderContext())
-            {
-                var order = m.DeepClone();
-                context.Orders.Add(order);
+           
+                var order1 = m.DeepClone();
+                context.Orders.Add(order1);
                 context.SaveChanges();
             }
-            return true;
+            return true;*/
         }
         public bool DeleteOrder(int orderNum)
         {
@@ -246,7 +280,7 @@ namespace ConsoleApp3
             {
                 if (flag)
                 {
-                    var pointOrderItem = context.OrderItems.Where(w => w.ItemName == Name).OrderBy(w => w.OrderID);
+                    var pointOrderItem = context.OrderItems.Where(w => w.Name == Name).OrderBy(w => w.OrderID);
                     List<Order> returnOrder = new List<Order>();
                     foreach (OrderItem item in pointOrderItem)
                     {

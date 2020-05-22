@@ -34,14 +34,14 @@
             this.lblNum = new System.Windows.Forms.Label();
             this.lblPrice = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
+            this.itembindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.txtNum = new System.Windows.Forms.TextBox();
             this.txtPrice = new System.Windows.Forms.TextBox();
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.btnOK = new System.Windows.Forms.Button();
-            this.itembindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.itembindingSource1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -105,6 +105,10 @@
             this.txtName.Size = new System.Drawing.Size(182, 28);
             this.txtName.TabIndex = 3;
             // 
+            // itembindingSource1
+            // 
+            this.itembindingSource1.DataSource = typeof(ConsoleApp3.OrderItem);
+            // 
             // txtNum
             // 
             this.txtNum.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.itembindingSource1, "Amount", true));
@@ -139,10 +143,6 @@
             this.btnOK.Text = "确定";
             this.btnOK.UseVisualStyleBackColor = true;
             // 
-            // itembindingSource1
-            // 
-            this.itembindingSource1.DataSource = typeof(ConsoleApp3.OrderItem);
-            // 
             // FormEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -154,8 +154,8 @@
             this.Text = "FormEdit";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.itembindingSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
             this.ResumeLayout(false);
 
         }

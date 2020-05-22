@@ -47,12 +47,8 @@ namespace OrderManagement
             orderService.AddOrder(order2);
             orderService.AddOrder(order3);
             orderService.AddOrder(order4);
-            List<Order> orderList = new List<Order>();
-            using (var context = new OrderContext())
-            {
-                orderList = context.Orders.ToList();
-            }
-            bindingSourceOrder.DataSource = orderList;
+            
+            bindingSourceOrder.DataSource = OrderService.GetAllOrders();
 
         }
 
@@ -69,12 +65,8 @@ namespace OrderManagement
 
         private void QueryAll()
         {
-            List<Order> orderList = new List<Order>();
-            using (var context = new OrderContext())
-            {
-                orderList = context.Orders.ToList();
-            }
-            bindingSourceOrder.DataSource = orderList;
+           
+            bindingSourceOrder.DataSource = OrderService.GetAllOrders();
             bindingSourceOrder.ResetBindings(false);
         }
 
@@ -135,15 +127,11 @@ namespace OrderManagement
 
         private void BtnFind_Click(object sender, EventArgs e)
         {
-            List<Order> orderList = new List<Order>();
-            using (var context = new OrderContext())
-            {
-                orderList = context.Orders.ToList();
-            }
+           
             switch (cmbAccordItem.SelectedIndex)
             {
                 case 0://所有订单
-                    bindingSourceOrder.DataSource = orderList;
+                    bindingSourceOrder.DataSource = OrderService.GetAllOrders();
                     break;
                 case 1://根据ID查询
                     Order orderList1 = orderService.FindOrder(Int32.Parse(txtAccordDtail.Text));

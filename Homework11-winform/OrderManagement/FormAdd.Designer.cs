@@ -59,7 +59,7 @@
             // 
             // txtID
             // 
-            this.txtID.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.orderBindingSource, "OrderNum", true));
+            this.txtID.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.orderBindingSource, "OrderID", true));
             this.txtID.Location = new System.Drawing.Point(94, 26);
             this.txtID.Margin = new System.Windows.Forms.Padding(3, 13, 23, 23);
             this.txtID.Name = "txtID";
@@ -227,7 +227,7 @@
             // 
             // ItembindingSource1
             // 
-            this.ItembindingSource1.DataMember = "ItemList";
+            this.ItembindingSource1.DataMember = "OrderItems";
             this.ItembindingSource1.DataSource = this.orderBindingSource;
             // 
             // nameDataGridViewTextBoxColumn
