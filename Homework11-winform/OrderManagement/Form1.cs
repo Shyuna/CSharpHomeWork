@@ -17,7 +17,7 @@ namespace OrderManagement
         public Form1()
         {
             InitializeComponent();
-            orderService=new OrderService();
+           orderService=new OrderService();
             OrderItem item1 = new OrderItem(1,"apple", 5.2, 1);
             OrderItem item2 = new OrderItem(2,"orange", 3.3, 2);
             OrderItem item3 = new OrderItem(3,"potato", 4.5, 3);
@@ -31,25 +31,13 @@ namespace OrderManagement
             itemList2.Add(item2);
             itemList2.Add(item3);
             itemList2.Add(item4);
-            List<OrderItem> itemList3 = new List<OrderItem>();
-            itemList3.Add(item2);
-            itemList3.Add(item4);
-            itemList3.Add(item5);
-            List<OrderItem> itemList4 = new List<OrderItem>();
-            itemList4.Add(item1);
-            itemList4.Add(item3);
-            itemList4.Add(item4);
             Order order1 = new Order(2001, "wuhan", "ZhangSan", itemList1);
             Order order2 = new Order(2002, "beijing", "LiSi", itemList2);
-            Order order3 = new Order(2003, "shanghai", "WangWu", itemList3);
-            Order order4 = new Order(2004, "hangzhou", "ZhaoLiu", itemList4);
             orderService.AddOrder(order1);
             orderService.AddOrder(order2);
-            orderService.AddOrder(order3);
-            orderService.AddOrder(order4);
             
             bindingSourceOrder.DataSource = OrderService.GetAllOrders();
-
+            cmbAccordItem.SelectedIndex = 0;
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)

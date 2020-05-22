@@ -36,18 +36,18 @@ namespace OrderManagement
         private void BtnAddItem_Click(object sender, EventArgs e)
         {
             FormEdit formEdit = new FormEdit(new OrderItem());
-            try
-            {
+           // try
+           // {
                 if (formEdit.ShowDialog() == DialogResult.OK)
                 {
                     CurrentOrder.AddItem(formEdit.orderItem);
                     ItembindingSource1.ResetBindings(false);
                 }
-            }
-            catch (Exception e2)
-            {
-                MessageBox.Show(e2.Message);
-            }
+         //   }
+         //   catch (Exception e2)
+         //   {
+         //       MessageBox.Show(e2.Message);
+         //   }
         }
 
         private void BtnModifyItem_Click(object sender, EventArgs e)

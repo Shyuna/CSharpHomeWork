@@ -96,7 +96,7 @@ namespace ConsoleApp3
             OrderID = orderNum;
             Address = address;
             Customer = customer;
-            this.OrderItems = itemList;
+            if (itemList != null) OrderItems = itemList;
         }
         public Order()
         {
@@ -119,33 +119,15 @@ namespace ConsoleApp3
         }
         public bool AddItem(OrderItem m)
         {
-            using (var context = new OrderContext())
-            {
-                var orderItem = context.OrderItems
-                    .SingleOrDefault(o => o.OrderItemID == m.OrderItemID);
-                if (orderItem != null) return false;
-            }
-
-            using (var context = new OrderContext())
-            {
-                var orderItem = m.DeepClone();
-                context.OrderItems.Add(orderItem);
-                context.SaveChanges();
-            }           
+            if (OrderItems.Contains(m))
+                throw new ApplicationException($"添加错误：明细项已经存在!");
+            OrderItems.Add(m);
             return true;
+            
         }
         public void RemoveItem(OrderItem orderItem)
         {
-            using (var context = new OrderContext())
-            {
-                var OrderItem = context.OrderItems
-                    .SingleOrDefault(o => o.OrderItemID == orderItem.OrderItemID);
-                if (OrderItem != null)
-                {
-                    context.OrderItems.Remove(OrderItem);
-                    context.SaveChanges();
-                }
-            }
+            OrderItems.Remove(orderItem);
         }
         public override string ToString()
         {
@@ -188,36 +170,46 @@ namespace ConsoleApp3
         {
             try
             {
-                using (var context = new OrderContext())
+                using (var db = new OrderContext())
                 {
-                    return AllOrders(context).ToList();
+                    if (AllOrders(db) == null)
+                    {
+                        
+                        return new List<Order>();
+                    }
+                    else
+                    {
+                        return AllOrders(db).ToList();
+                    }
                 }
             }
-            catch(Exception e)
+            catch
             {
                 return new List<Order>();
             }
+            
         }
         private static IQueryable<Order> AllOrders(OrderContext context)
         {
+            
             return context.Orders;
-                
-                      
+
         }
-        public bool AddOrder(Order m)
+        public void AddOrder(Order m)
         {
             try
             {
                 using (var context = new OrderContext())
                 {
-                    context.Orders.Add(m.DeepClone());
+  
+                    context.Orders.Add(m);
                     context.SaveChanges();
                 }
-                return true;
             }
             catch (Exception e)
             {
-                return false;// throw new ApplicationException($"添加错误: {e.Message}");
+                Console.WriteLine("addorder exception");
+                //throw new ApplicationException($"添加错误: {e.Message}");
             }
            /* using (var context = new OrderContext())
             {
