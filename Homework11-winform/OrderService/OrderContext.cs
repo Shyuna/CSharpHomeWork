@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using ConsoleApp3;
 
 namespace ConsoleApp3
 {
