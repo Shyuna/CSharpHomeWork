@@ -1,12 +1,5 @@
 ﻿using ConsoleApp3;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OrderManagement
@@ -36,18 +29,14 @@ namespace OrderManagement
         private void BtnAddItem_Click(object sender, EventArgs e)
         {
             FormEdit formEdit = new FormEdit(new OrderItem());
-           // try
-           // {
+
                 if (formEdit.ShowDialog() == DialogResult.OK)
                 {
+                formEdit.orderItem.OrderID = CurrentOrder.OrderID;
                     CurrentOrder.AddItem(formEdit.orderItem);
                     ItembindingSource1.ResetBindings(false);
                 }
-         //   }
-         //   catch (Exception e2)
-         //   {
-         //       MessageBox.Show(e2.Message);
-         //   }
+
         }
 
         private void BtnModifyItem_Click(object sender, EventArgs e)

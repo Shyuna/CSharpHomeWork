@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ConsoleApp3;
 
@@ -74,7 +68,7 @@ namespace OrderManagement
             FormAdd form2 = new FormAdd(order, true);
             if (form2.ShowDialog() == DialogResult.OK)
             {
-                orderService.UpdateOrder(form2.CurrentOrder);
+                OrderService.UpdateOrder(form2.CurrentOrder);
                 QueryAll();
             }
         }
@@ -122,7 +116,7 @@ namespace OrderManagement
                     bindingSourceOrder.DataSource = OrderService.GetAllOrders();
                     break;
                 case 1://根据ID查询
-                    Order orderList1 = orderService.FindOrder(Int32.Parse(txtAccordDtail.Text));
+                    List<Order> orderList1 = orderService.FindOrder(Int32.Parse(txtAccordDtail.Text));
                     bindingSourceOrder.DataSource = orderList1;
                     break;
                 case 2://根据顾客名查询

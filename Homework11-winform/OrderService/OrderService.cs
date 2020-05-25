@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -192,7 +193,7 @@ namespace ConsoleApp3
         private static IQueryable<Order> AllOrders(OrderContext context)
         {
             
-            return context.Orders;
+            return context.Orders.Include("OrderItems");
 
         }
         public void AddOrder(Order m)
@@ -238,33 +239,33 @@ namespace ConsoleApp3
             }
             return false;
         }
-        public void UpdateOrder(Order m)
+        public static void UpdateOrder(Order newOrder)
         {
-            using (var context = new OrderContext())
+            RemoveItems(newOrder.OrderID);
+            using (var db = new OrderContext())
             {
-                var order = context.Orders
-                    .SingleOrDefault(o => o.OrderID == m.OrderID);
-                if (order == null)
-                {
-                    AddOrder(m);
-                }
-                else
-                {
-                    order = m.DeepClone();
-                    context.SaveChanges();
-                }
+                db.Entry(newOrder).State = EntityState.Modified;
+                db.OrderItems.AddRange(newOrder.OrderItems);
+                db.SaveChanges();
             }
         }
-        public Order FindOrder(int orderNum)
+        private static void RemoveItems(int orderId)
         {
-            using (var context = new OrderContext())
+            using (var db = new OrderContext())
             {
-                var order = context.Orders
-                    .SingleOrDefault(o => o.OrderID == orderNum);
-                if (order != null) return order.DeepClone();
-                else return new Order();
+                var oldItems = db.OrderItems.Where(item => item.OrderID== orderId);
+                db.OrderItems.RemoveRange(oldItems);
+                db.SaveChanges();
             }
-
+        }
+        public List<Order> FindOrder(int orderNum)
+        {
+            using (var db = new OrderContext())
+            {
+                var query = AllOrders(db)
+                  .Where(o => o.OrderID == orderNum);
+                return query.ToList();
+            }          
         }
         public List<Order> FindOrder(bool flag, string Name)
         {
@@ -272,23 +273,23 @@ namespace ConsoleApp3
             {
                 if (flag)
                 {
-                    var pointOrderItem = context.OrderItems.Where(w => w.Name == Name).OrderBy(w => w.OrderID);
-                    List<Order> returnOrder = new List<Order>();
-                    foreach (OrderItem item in pointOrderItem)
+                    using (var db = new OrderContext())
                     {
-                        returnOrder.Add(FindOrder(item.OrderID).DeepClone());
+                        var query = AllOrders(db)
+                          .Where(o => o.OrderItems.Count(i => i.Name == Name) > 0);
+                        return query.ToList();
                     }
-                    return returnOrder;
+                    
                 }
                 else
                 {
-                    var pointOrder = context.Orders.Where(w => w.Customer == Name).OrderBy(w => w.OrderID);
-                    List<Order> returnOrder = new List<Order>();
-                    foreach (Order o in pointOrder)
+                    using (var db = new OrderContext())
                     {
-                        returnOrder.Add(o.DeepClone());
+                        var query = AllOrders(db)
+                          .Where(o => o.Customer== Name);
+                        return query.ToList();
                     }
-                    return returnOrder;
+                    
                 }
             }
         }
